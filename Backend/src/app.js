@@ -32,6 +32,7 @@ const authLimiter = rateLimit({
     message: { message: "Too many attempts. Try again in a few minutes." },
 })
 
+app.get("/", (_req, res) => res.json({ message: "E-commerce API is running", health: "/api/health" }))
 app.get("/api/health", (_req, res) => res.json({ ok: true }))
 
 app.use("/api/auth", authLimiter, authRoutes)
