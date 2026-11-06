@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+/* Palette is taken from the fabrics abayas are actually sold in */
+@theme {
+  --color-dove: #E3E6E2;      /* page ground */
+  --color-chiffon: #F0F2EF;   /* raised surfaces */
+  --color-mist: #C9CEC9;      /* hairlines */
+  --color-nida: #1D2838;      /* ink / navy nida */
+  --color-nida-soft: #4A5565; /* secondary text */
+  --color-mulberry: #7B2D4B;  /* action colour */
+  --color-olive: #69724F;
+  --color-thread: #B59A66;    /* embroidery thread, used sparingly */
+
+  --font-display: "Italiana", "Times New Roman", serif;
+  --font-sans: "Hanken Grotesk", system-ui, sans-serif;
+}
+
+@layer base {
+  html { background: var(--color-dove); color: var(--color-nida); }
+  body {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  h1, h2, h3, .font-display { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.01em; }
+  ::selection { background: var(--color-mulberry); color: var(--color-chiffon); }
+  :focus-visible { outline: 2px solid var(--color-mulberry); outline-offset: 3px; }
+  img { display: block; max-width: 100%; }
+  button { cursor: pointer; }
+  button:disabled { cursor: not-allowed; opacity: .5; }
+}
+
+/* Lenis */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* component classes live in a layer so Tailwind utilities can still override them */
+@layer components {
+  /* Pleated fabric: a base colour plus repeating light/shadow folds */
+  .fabric {
+    background-color: var(--fabric, var(--color-nida));
+    background-image:
+      repeating-linear-gradient(90deg,
+        rgb(0 0 0 / 0) 0, rgb(0 0 0 / .22) 9%, rgb(255 255 255 / .07) 18%, rgb(0 0 0 / 0) 26%),
+      linear-gradient(180deg, rgb(255 255 255 / .06), rgb(0 0 0 / .18));
+    background-size: var(--pleat, 90px) 100%, 100% 100%;
+  }
+
+  .arch { border-radius: 999px 999px 0 0; }
+
+  .field {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--color-mist);
+    padding: .7rem 0;
+    color: var(--color-nida);
+    transition: border-color .2s;
+  }
+  .field:focus { outline: none; border-bottom-color: var(--color-mulberry); }
+  .field::placeholder { color: color-mix(in srgb, var(--color-nida) 40%, transparent); }
+  select.field { appearance: none; background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%); background-position: calc(100% - 14px) 55%, calc(100% - 9px) 55%; background-size: 5px 5px; background-repeat: no-repeat; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: .6rem;
+    padding: .95rem 1.8rem; font-weight: 500; font-size: .95rem;
+    background: var(--color-nida); color: var(--color-chiffon);
+    border: 1px solid var(--color-nida);
+    transition: background .25s, color .25s, border-color .25s;
+  }
+  .btn:hover:not(:disabled) { background: var(--color-mulberry); border-color: var(--color-mulberry); }
+  .btn-ghost { background: transparent; color: var(--color-nida); }
+  .btn-ghost:hover:not(:disabled) { background: var(--color-nida); border-color: var(--color-nida); color: var(--color-chiffon); }
+  .btn-danger { background: transparent; color: var(--color-mulberry); border-color: var(--color-mulberry); }
+  .btn-danger:hover:not(:disabled) { background: var(--color-mulberry); color: var(--color-chiffon); }
+  .btn-sm { padding: .5rem 1rem; font-size: .85rem; }
+
+  .skeleton {
+    position: relative; overflow: hidden;
+    background: color-mix(in srgb, var(--color-nida) 9%, var(--color-dove));
+  }
+  .skeleton::after {
+    content: ""; position: absolute; inset: 0; transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / .5), transparent);
+    animation: skeleton-sheen 1.7s ease-in-out infinite;
+  }
+
+  .link-line { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size .35s; }
+  .link-line:hover, .link-line.active { background-size: 100% 1px; }
+
+  .mask-line { display: block; overflow: hidden; }
+  .mask-line > span { display: block; will-change: transform; }
+}
+
+@keyframes skeleton-sheen { to { transform: translateX(100%); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after { animation: none; }
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
