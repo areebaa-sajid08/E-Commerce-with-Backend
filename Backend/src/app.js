@@ -14,11 +14,14 @@ import orderRoutes from "./routes/order.routes.js"
 import brandRoutes from "./routes/brand.routes.js"
 import superAdminRoutes from "./routes/superadmin.routes.js"
 import { notFound, errorHandler } from "./middlewares/error.middleware.js"
+import connectDB from "./db/db.js"
+import AppError from "./utils/AppError.js"
 
 const app = express()
+app.set("trust proxy", 1) // Vercel sits behind a proxy (needed for rate limiting and secure cookies)
 
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }))
-app.use(cors({ origin: env.clientUrl, credentials: true }))
+app.use(cors({ origin: env.clientOrigins, credentials: true }))
 app.use(express.json({ limit: "1mb" }))
 app.use(cookieParser())
 setupPassport()
@@ -34,6 +37,15 @@ const authLimiter = rateLimit({
 
 app.get("/", (_req, res) => res.json({ message: "E-commerce API is running", health: "/api/health" }))
 app.get("/api/health", (_req, res) => res.json({ ok: true }))
+
+app.use("/api", async (_req, _res, next) => {
+    try {
+        await connectDB()
+        next()
+    } catch {
+        next(new AppError("Database connection unavailable", 503))
+    }
+})
 
 app.use("/api/auth", authLimiter, authRoutes)
 app.use("/api/product", productRoutes)

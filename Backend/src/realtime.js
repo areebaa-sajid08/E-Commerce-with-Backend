@@ -20,7 +20,7 @@ function readCookie(header = "", name) {
 }
 
 export function initRealtime(httpServer) {
-    io = new Server(httpServer, { cors: { origin: env.clientUrl, credentials: true } })
+    io = new Server(httpServer, { cors: { origin: env.clientOrigins, credentials: true } })
 
     // identify the visitor from the same httpOnly cookie the API uses; anonymous visitors are allowed
     io.use(async (socket, next) => {

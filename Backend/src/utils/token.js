@@ -7,7 +7,9 @@ export function signToken(user) {
 
 export const cookieOptions = {
     httpOnly: true,
-    sameSite: "lax",
+    // Frontend and backend live on different Vercel domains, so in production the
+    // cookie must be SameSite=None (which requires Secure). Locally Vite proxies, so lax is fine.
+    sameSite: env.isProd ? "none" : "lax",
     secure: env.isProd,
     maxAge: 7 * 24 * 60 * 60 * 1000,
 }

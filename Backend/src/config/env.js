@@ -11,7 +11,9 @@ if (missing.length) {
 const env = {
     port: Number(process.env.PORT) || 3000,
     isProd: process.env.NODE_ENV === "production",
-    clientUrl: process.env.CLIENT_URL || "http://localhost:5173",
+    // CLIENT_URL may be a comma-separated list; trailing slashes are removed
+    clientOrigins: (process.env.CLIENT_URL || "http://localhost:5173")
+        .split(",").map((s) => s.trim().replace(/\/+$/, "")).filter(Boolean),
     mongoUri: process.env.MONGO_URI,
     jwtSecret: process.env.JWT_SECRET,
     jwtExpiresIn: process.env.JWT_EXPIRES_IN || "7d",
@@ -23,6 +25,7 @@ const env = {
     googleCallbackUrl: process.env.GOOGLE_CALLBACK_URL || "http://localhost:3000/api/auth/google/callback",
 }
 // Google sign-in is optional: the button just reports "unavailable" until these are set
+env.clientUrl = env.clientOrigins[0]
 env.googleEnabled = Boolean(env.googleClientId && env.googleClientSecret)
 
 export default env

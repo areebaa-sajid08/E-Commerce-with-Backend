@@ -9,6 +9,8 @@ export const socket = io(import.meta.env.VITE_SOCKET_URL || undefined, {
 
 // open (or re-open) the connection, e.g. after sign-in / sign-out so the server sees the new identity
 export function reconnectSocket() {
+  // On Vercel the API is serverless (no websockets). Without VITE_SOCKET_URL, don't try to connect in production.
+  if (import.meta.env.PROD && !import.meta.env.VITE_SOCKET_URL) return
   if (socket.connected || socket.active) socket.disconnect()
   socket.connect()
 }
