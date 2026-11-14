@@ -1,3 +1,9 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://e-commerce-backend-one-delta.vercel.app/api/:path*"
+    },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
 }
